@@ -1,0 +1,12 @@
+{
+  "name": "discord-bot-form-api",
+  "version": "1.0.0",
+  "description": "Vercel serverless API for Discord bot form submissions",
+  "main": "api/form-submission.js",
+  "engines": {
+    "node": ">=18.x"
+  },
+  "dependencies": {
+    "discord.js": "^14.25.1"
+  }
+}
