@@ -5,16 +5,5 @@
       "src": "api/**/*.js",
       "use": "@vercel/node"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    }
-  ],
-  "env": {
-    "DISCORD_TOKEN": "@discord-token",
-    "API_SECRET": "@api-secret",
-    "FORM_SUBMISSION_CHANNEL_ID": "@form-channel-id"
-  }
+  ]
 }
