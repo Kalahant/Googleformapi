@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'Channel not found - check FORM_SUBMISSION_CHANNEL_ID' });
         }
 
-        // Create the embed (NO TIMESTAMP)
+        // Create the embed - NO TIMESTAMP
         const discordEmbed = new EmbedBuilder()
             .setColor(embed.color || 0x0099ff)
             .setTitle(embed.title || 'Form Submission')
