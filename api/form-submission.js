@@ -113,18 +113,18 @@ module.exports = async (req, res) => {
             discordEmbed.setImage(embed.image);
         }
 
-        // Add footer if provided - FIXED HERE
+        // Add footer - COMPLETELY REWRITTEN
         if (embed.footer) {
-            if (typeof embed.footer === 'string') {
-                // Simple string footer
-                discordEmbed.setFooter({ text: embed.footer });
-            } else if (typeof embed.footer === 'object' && embed.footer.text) {
-                // Object with text and optional iconURL
-                const footerOptions = { text: embed.footer.text };
-                if (embed.footer.iconURL) {
-                    footerOptions.iconURL = embed.footer.iconURL;
+            // Extract text and iconURL from footer object
+            const footerText = embed.footer.text || (typeof embed.footer === 'string' ? embed.footer : null);
+            const footerIcon = embed.footer.iconURL || null;
+            
+            if (footerText) {
+                const footerData = { text: footerText };
+                if (footerIcon) {
+                    footerData.iconURL = footerIcon;
                 }
-                discordEmbed.setFooter(footerOptions);
+                discordEmbed.setFooter(footerData);
             }
         }
 
