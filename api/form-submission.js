@@ -85,16 +85,20 @@ module.exports = async (req, res) => {
             return res.status(404).json({ error: 'Channel not found - check FORM_SUBMISSION_CHANNEL_ID' });
         }
 
-        // Create the embed
+        // Create the embed (NO TIMESTAMP)
         const discordEmbed = new EmbedBuilder()
             .setColor(embed.color || 0x0099ff)
             .setTitle(embed.title || 'Form Submission')
             .setDescription(embed.description || '')
-            .setTimestamp()
             .setFooter({
                 text: 'Law Enforcement Training Institute',
                 iconURL: 'https://cdn.discordapp.com/attachments/1389509245266952193/1460824398310146130/LETI_1.png'
             });
+
+        // Add URL if provided (for Roblox profile link)
+        if (embed.url) {
+            discordEmbed.setURL(embed.url);
+        }
 
         // Add fields from the form
         if (embed.fields && Array.isArray(embed.fields)) {
