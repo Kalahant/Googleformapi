@@ -90,7 +90,11 @@ module.exports = async (req, res) => {
             .setColor(embed.color || 0x0099ff)
             .setTitle(embed.title || 'Form Submission')
             .setDescription(embed.description || '')
-            .setTimestamp();
+            .setTimestamp()
+            .setFooter({
+                text: 'Law Enforcement Training Institute',
+                iconURL: 'https://cdn.discordapp.com/attachments/1389509245266952193/1460824398310146130/LETI_1.png'
+            });
 
         // Add fields from the form
         if (embed.fields && Array.isArray(embed.fields)) {
@@ -111,21 +115,6 @@ module.exports = async (req, res) => {
         // Add image if provided
         if (embed.image) {
             discordEmbed.setImage(embed.image);
-        }
-
-        // Add footer - COMPLETELY REWRITTEN
-        if (embed.footer) {
-            // Extract text and iconURL from footer object
-            const footerText = embed.footer.text || (typeof embed.footer === 'string' ? embed.footer : null);
-            const footerIcon = embed.footer.iconURL || null;
-            
-            if (footerText) {
-                const footerData = { text: footerText };
-                if (footerIcon) {
-                    footerData.iconURL = footerIcon;
-                }
-                discordEmbed.setFooter(footerData);
-            }
         }
 
         // Create buttons
