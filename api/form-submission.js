@@ -126,11 +126,11 @@ module.exports = async (req, res) => {
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('form_allow')
-                    .setLabel('Allow')
+                    .setLabel('Accept')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                     .setCustomId('form_deny')
-                    .setLabel('Deny')
+                    .setLabel('Reject')
                     .setStyle(ButtonStyle.Danger)
             );
 
