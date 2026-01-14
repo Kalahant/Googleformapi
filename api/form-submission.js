@@ -1,14 +1,15 @@
 // api/form-submission.js
-// This is a Vercel serverless function
+// Vercel serverless function for Discord form submissions
 
 const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
-// Create a Discord client (will be initialized per request)
+// Discord client cache
 let client = null;
+let clientReady = false;
 
-// Initialize Discord client if not already initialized
+// Initialize Discord client
 async function getDiscordClient() {
-    if (client && client.isReady()) {
+    if (client && clientReady) {
         return client;
     }
 
@@ -19,11 +20,20 @@ async function getDiscordClient() {
         ]
     });
 
+    // Login and wait for ready
     await client.login(process.env.DISCORD_TOKEN);
     
-    // Wait for client to be ready
+    // Wait for ready event
     await new Promise((resolve) => {
-        client.once('ready', resolve);
+        if (client.isReady()) {
+            clientReady = true;
+            resolve();
+        } else {
+            client.once('ready', () => {
+                clientReady = true;
+                resolve();
+            });
+        }
     });
 
     return client;
@@ -51,7 +61,7 @@ module.exports = async (req, res) => {
         // Verify secret key for security
         const authHeader = req.headers.authorization;
         if (authHeader !== `Bearer ${process.env.API_SECRET}`) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            return res.status(401).json({ error: 'Unauthorized - Invalid API secret' });
         }
 
         const { embed } = req.body;
@@ -66,13 +76,13 @@ module.exports = async (req, res) => {
         // Get the channel
         const channelId = process.env.FORM_SUBMISSION_CHANNEL_ID;
         if (!channelId) {
-            return res.status(500).json({ error: 'FORM_SUBMISSION_CHANNEL_ID not configured' });
+            return res.status(500).json({ error: 'FORM_SUBMISSION_CHANNEL_ID not configured in environment variables' });
         }
 
         const channel = await discordClient.channels.fetch(channelId);
         
         if (!channel) {
-            return res.status(404).json({ error: 'Channel not found' });
+            return res.status(404).json({ error: 'Channel not found - check FORM_SUBMISSION_CHANNEL_ID' });
         }
 
         // Create the embed
@@ -103,9 +113,19 @@ module.exports = async (req, res) => {
             discordEmbed.setImage(embed.image);
         }
 
-        // Add footer if provided
+        // Add footer if provided - FIXED HERE
         if (embed.footer) {
-            discordEmbed.setFooter({ text: embed.footer });
+            if (typeof embed.footer === 'string') {
+                // Simple string footer
+                discordEmbed.setFooter({ text: embed.footer });
+            } else if (typeof embed.footer === 'object' && embed.footer.text) {
+                // Object with text and optional iconURL
+                const footerOptions = { text: embed.footer.text };
+                if (embed.footer.iconURL) {
+                    footerOptions.iconURL = embed.footer.iconURL;
+                }
+                discordEmbed.setFooter(footerOptions);
+            }
         }
 
         // Create buttons
@@ -135,6 +155,9 @@ module.exports = async (req, res) => {
 
     } catch (error) {
         console.error('Error processing form submission:', error);
-        res.status(500).json({ error: 'Internal server error', details: error.message });
+        res.status(500).json({ 
+            error: 'Internal server error', 
+            details: error.message 
+        });
     }
 };
